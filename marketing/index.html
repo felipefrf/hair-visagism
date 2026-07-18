@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Visagia — Visagismo digital: o corte certo para o seu rosto e para quem você quer ser</title>
+<meta name="description" content="Envie uma foto, receba uma análise de visagismo explicável e descubra os cortes, cores e tratamentos que valorizam seu rosto e projetam a personalidade que você quer comunicar." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  /* ============ Refined design tokens (TypeUI skill: refined) ============ */
+  :root {
+    --color-primary: #3B82F6;
+    --color-secondary: #8B5CF6;
+    --color-success: #16A34A;
+    --color-warning: #D97706;
+    --color-danger: #DC2626;
+    --color-surface: #FFFFFF;
+    --color-surface-alt: #F8F7F4;
+    --color-text: #111827;
+    --color-text-muted: #4B5563;
+    --color-border: #E5E7EB;
+
+    --font-serif: "Playfair Display", Georgia, serif;
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+    /* type scale 12/14/16/20/24/32 (+display sizes) */
+    --fs-12: 0.75rem; --fs-14: 0.875rem; --fs-16: 1rem;
+    --fs-20: 1.25rem; --fs-24: 1.5rem; --fs-32: 2rem;
+
+    /* spacing scale 4/8/12/16/24/32 */
+    --sp-1: 4px; --sp-2: 8px; --sp-3: 12px;
+    --sp-4: 16px; --sp-6: 24px; --sp-8: 32px;
+
+    --radius-sm: 4px; --radius-md: 8px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-serif);
+    font-size: var(--fs-16);
+    line-height: 1.65;
+    color: var(--color-text);
+    background: var(--color-surface);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 var(--sp-6); }
+
+  /* mono caps label — the "kicker" used across sections */
+  .kicker {
+    font-family: var(--font-mono);
+    font-size: var(--fs-12);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    display: block;
+    margin-bottom: var(--sp-3);
+  }
+
+  a { color: var(--color-primary); }
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* ============ Header ============ */
+  header {
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+  .nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: var(--sp-4) var(--sp-6);
+    max-width: 1080px; margin: 0 auto;
+  }
+  .brand { font-size: var(--fs-20); font-weight: 700; font-style: italic; text-decoration: none; color: var(--color-text); }
+  .nav-links { display: flex; gap: var(--sp-6); list-style: none; }
+  .nav-links a {
+    font-family: var(--font-mono); font-size: var(--fs-12); letter-spacing: 0.08em;
+    text-transform: uppercase; text-decoration: none; color: var(--color-text-muted);
+  }
+  .nav-links a:hover { color: var(--color-text); }
+  @media (max-width: 720px) { .nav-links { display: none; } }
+
+  /* ============ Hero ============ */
+  .hero { padding: calc(var(--sp-8) * 3) 0 calc(var(--sp-8) * 2); text-align: center; }
+  .hero h1 {
+    font-size: clamp(var(--fs-32), 6vw, 3.5rem);
+    font-weight: 600; line-height: 1.15;
+    max-width: 20ch; margin: 0 auto var(--sp-6);
+  }
+  .hero h1 em { font-style: italic; color: var(--color-secondary); }
+  .hero p.lede {
+    font-size: var(--fs-20); color: var(--color-text-muted);
+    max-width: 52ch; margin: 0 auto var(--sp-8);
+  }
+  .cta-row { display: flex; gap: var(--sp-4); justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-block; padding: var(--sp-3) var(--sp-6);
+    border-radius: var(--radius-md); font-family: var(--font-mono);
+    font-size: var(--fs-14); font-weight: 500; letter-spacing: 0.04em;
+    text-decoration: none; border: 1px solid transparent;
+    transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+  }
+  .btn-primary { background: var(--color-text); color: var(--color-surface); }
+  .btn-primary:hover { background: var(--color-primary); }
+  .btn-ghost { border-color: var(--color-border); color: var(--color-text); }
+  .btn-ghost:hover { border-color: var(--color-text); }
+
+  /* ============ Sections ============ */
+  section { padding: calc(var(--sp-8) * 2) 0; }
+  section.alt { background: var(--color-surface-alt); }
+  h2 { font-size: var(--fs-32); font-weight: 600; line-height: 1.2; margin-bottom: var(--sp-6); max-width: 26ch; }
+  .section-intro { color: var(--color-text-muted); max-width: 60ch; margin-bottom: var(--sp-8); }
+
+  /* how it works — numbered steps */
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--sp-6); counter-reset: step; }
+  .step { padding: var(--sp-6); border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); }
+  .step::before {
+    counter-increment: step; content: counter(step, decimal-leading-zero);
+    font-family: var(--font-mono); font-size: var(--fs-12); color: var(--color-secondary);
+    display: block; margin-bottom: var(--sp-3); letter-spacing: 0.1em;
+  }
+  .step h3 { font-size: var(--fs-20); font-weight: 600; margin-bottom: var(--sp-2); }
+  .step p { font-size: var(--fs-14); color: var(--color-text-muted); }
+
+  /* differentiators */
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--sp-6); }
+  .card { padding: var(--sp-6); border-left: 2px solid var(--color-primary); background: var(--color-surface); }
+  .card h3 { font-size: var(--fs-20); font-weight: 600; margin-bottom: var(--sp-2); }
+  .card p { font-size: var(--fs-14); color: var(--color-text-muted); }
+  .card.violet { border-left-color: var(--color-secondary); }
+
+  /* MVP feature table */
+  table { width: 100%; border-collapse: collapse; font-size: var(--fs-14); }
+  caption { text-align: left; font-style: italic; color: var(--color-text-muted); margin-bottom: var(--sp-4); }
+  th {
+    font-family: var(--font-mono); font-size: var(--fs-12); letter-spacing: 0.1em;
+    text-transform: uppercase; font-weight: 500; text-align: left;
+    color: var(--color-text-muted); padding: var(--sp-3) var(--sp-4);
+    border-bottom: 1px solid var(--color-text);
+  }
+  td { padding: var(--sp-4); border-bottom: 1px solid var(--color-border); vertical-align: top; }
+  td:first-child { font-weight: 600; white-space: nowrap; }
+  .tag {
+    display: inline-block; font-family: var(--font-mono); font-size: var(--fs-12);
+    padding: var(--sp-1) var(--sp-2); border-radius: var(--radius-sm);
+    background: #EFF6FF; color: var(--color-primary);
+  }
+  .tag.soon { background: #F5F3FF; color: var(--color-secondary); }
+
+  /* tech list */
+  .tech { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--sp-6); }
+  .tech dt { font-family: var(--font-mono); font-size: var(--fs-12); letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: var(--sp-1); }
+  .tech dd { font-size: var(--fs-16); font-weight: 600; margin-bottom: var(--sp-1); }
+  .tech dd + p { font-size: var(--fs-14); color: var(--color-text-muted); }
+
+  /* roadmap */
+  .phases { list-style: none; border-left: 1px solid var(--color-border); }
+  .phases li { position: relative; padding: 0 0 var(--sp-8) var(--sp-8); }
+  .phases li:last-child { padding-bottom: 0; }
+  .phases li::before {
+    content: ""; position: absolute; left: -5px; top: 8px;
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--color-primary); border: 2px solid var(--color-surface);
+  }
+  .phases .ph-label { font-family: var(--font-mono); font-size: var(--fs-12); letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-primary); }
+  .phases h3 { font-size: var(--fs-20); font-weight: 600; margin: var(--sp-1) 0 var(--sp-2); }
+  .phases p { font-size: var(--fs-14); color: var(--color-text-muted); max-width: 64ch; }
+
+  /* privacy strip */
+  .privacy { text-align: center; }
+  .privacy blockquote {
+    font-size: var(--fs-24); font-style: italic; font-weight: 500;
+    max-width: 34ch; margin: 0 auto var(--sp-4);
+  }
+  .privacy p { color: var(--color-text-muted); max-width: 56ch; margin: 0 auto; font-size: var(--fs-14); }
+
+  /* footer */
+  footer { border-top: 1px solid var(--color-border); padding: var(--sp-8) 0; }
+  .foot { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: var(--sp-4); }
+  footer p { font-family: var(--font-mono); font-size: var(--fs-12); color: var(--color-text-muted); }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav" aria-label="Principal">
+    <a class="brand" href="#">Visagia</a>
+    <ul class="nav-links">
+      <li><a href="#como-funciona">Como funciona</a></li>
+      <li><a href="#diferenciais">Diferenciais</a></li>
+      <li><a href="#mvp">MVP</a></li>
+      <li><a href="#tecnologia">Tecnologia</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="hero wrap">
+    <span class="kicker">Visagismo digital · beta em breve</span>
+    <h1>O corte certo para o seu rosto — e para <em>quem você quer ser</em>.</h1>
+    <p class="lede">
+      Envie uma foto. Nossa análise de visagismo lê as proporções do seu rosto e o seu tipo de
+      cabelo, e recomenda cortes, cores e tratamentos que valorizam seus traços e comunicam a
+      personalidade que você quer projetar — sempre explicando o porquê.
+    </p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#mvp">Conhecer o produto</a>
+      <a class="btn btn-ghost" href="#como-funciona">Como funciona</a>
+    </div>
+  </section>
+
+  <!-- ============ COMO FUNCIONA ============ -->
+  <section id="como-funciona" class="alt">
+    <div class="wrap">
+      <span class="kicker">O método</span>
+      <h2>Uma consultoria de visagismo no seu navegador</h2>
+      <p class="section-intro">
+        Baseado no método de visagismo de Philip Hallawell: geometria facial + linguagem visual das
+        linhas + o que você quer comunicar. Nada de "tabela de formato de rosto" genérica.
+      </p>
+      <div class="steps">
+        <div class="step">
+          <h3>Envie sua foto</h3>
+          <p>A análise roda no seu próprio aparelho: 478 pontos faciais mapeados por visão computacional, sem enviar sua foto para servidor algum.</p>
+        </div>
+        <div class="step">
+          <h3>Conte sobre seu cabelo</h3>
+          <p>Padrão de curvatura (1A–4C), densidade, histórico de química e quanto tempo você tem por dia. O cabelo real limita mais que o formato do rosto — e nós levamos isso a sério.</p>
+        </div>
+        <div class="step">
+          <h3>Escolha o que quer projetar</h3>
+          <p>Ousadia? Criatividade? Elegância? Proximidade? Cada intenção tem uma linguagem visual de linhas, ângulos e volumes — e muda o ranking das recomendações.</p>
+        </div>
+        <div class="step">
+          <h3>Receba o relatório</h3>
+          <p>Cortes ranqueados com o porquê de cada um, custo de manutenção, caminho de tratamento químico quando necessário e um guia para levar ao seu cabeleireiro.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DIFERENCIAIS ============ -->
+  <section id="diferenciais">
+    <div class="wrap">
+      <span class="kicker">Por que somos diferentes</span>
+      <h2>Os apps de "provar corte" param na foto. Nós começamos nela.</h2>
+      <p class="section-intro">
+        A pesquisa de mercado é clara: simulação de corte virou commodity; recomendação confiável e
+        explicável continua rara. Nenhum concorrente implementa a metade "personalidade" do visagismo.
+      </p>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Explicabilidade</h3>
+          <p>Cada sugestão vem com a razão: "adiciona volume na altura do maxilar para equilibrar a testa mais larga; as camadas curvas comunicam acolhimento". Confiança vem de entender.</p>
+        </div>
+        <div class="card violet">
+          <h3>Personalidade projetada</h3>
+          <p>O único motor que cruza geometria facial com a intenção de imagem — a gramática de temperamentos do visagismo operacionalizada em código. Espaço competitivo totalmente aberto.</p>
+        </div>
+        <div class="card">
+          <h3>Textura em primeiro lugar</h3>
+          <p>Liso, ondulado, cacheado e crespo tratados como entrada de primeira classe — a falha nº 1 dos concorrentes. Dizemos com honestidade o que o seu cabelo faz e o que não faz.</p>
+        </div>
+        <div class="card violet">
+          <h3>Ponte química</h3>
+          <p>Progressiva, permanente, relaxamento, texturização: quando um estilo está fora do alcance natural, mostramos o caminho, o custo de manutenção e o risco — ou bloqueamos, se o cabelo não aguenta.</p>
+        </div>
+        <div class="card">
+          <h3>Privacidade por arquitetura</h3>
+          <p>Análise 100% no dispositivo (LGPD por design). Sua foto só sobe — com consentimento específico — se você pedir uma simulação, e é apagada em até 72h.</p>
+        </div>
+        <div class="card violet">
+          <h3>Ponte para a cadeira</h3>
+          <p>O resultado termina em um guia técnico para mostrar ao profissional — não em uma imagem impossível que o barbeiro terá que desmentir.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MVP ============ -->
+  <section id="mvp" class="alt">
+    <div class="wrap">
+      <span class="kicker">Escopo fechado</span>
+      <h2>O que entra no MVP</h2>
+      <table>
+        <caption>Plataforma: PWA web-first, responsiva — link compartilhável, sem instalação. App nativo só na fase 4.</caption>
+        <thead>
+          <tr><th scope="col">Funcionalidade</th><th scope="col">Descrição</th><th scope="col">Fase</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Captura com validação</td><td>Foto pela câmera ou upload, com checagem de pose, luz e oclusão por cabelo antes de aceitar.</td><td><span class="tag">MVP</span></td></tr>
+          <tr><td>Análise facial on-device</td><td>MediaPipe Face Landmarker no navegador; razões geométricas (comprimento, zigomático, mandíbula, angularidade).</td><td><span class="tag">MVP</span></td></tr>
+          <tr><td>Formato de rosto</td><td>Classificação transparente com confiança e top-2 ("oval puxado para quadrado"), nunca um rótulo seco.</td><td><span class="tag">MVP</span></td></tr>
+          <tr><td>Perfil de cabelo</td><td>Quiz: curvatura 1A–4C, densidade, química prévia, tolerância de manutenção.</td><td><span class="tag">MVP</span></td></tr>
+          <tr><td>Quiz de projeção</td><td>5–8 perguntas → vetor de arquétipos (ousado, criativo, acolhedor, profissional, elegante, romântico, sereno).</td><td><span class="tag">MVP</span></td></tr>
+          <tr><td>Motor de recomendação</td><td>Harmonia geométrica × personalidade × viabilidade de textura (com pontes químicas) − regras duras.</td><td><span class="tag">MVP</span></td></tr>
+          <tr><td>Relatório explicável</td><td>Estilos ranqueados com o porquê, manutenção e caminho químico; catálogo de 60–100 estilos cobrindo todas as texturas.</td><td><span class="tag">MVP</span></td></tr>
+          <tr><td>Compartilhar / levar ao salão</td><td>Card exportável com análise e estilos escolhidos.</td><td><span class="tag">MVP</span></td></tr>
+          <tr><td>Simulação na sua foto</td><td>Try-on generativo dos 3–5 melhores estilos (Gemini Flash Image / FLUX Kontext), com consentimento e apagamento automático.</td><td><span class="tag soon">Fase 3</span></td></tr>
+          <tr><td>App móvel & modo salão B2B</td><td>Empacotamento nativo, consultoria em tablet para salões, agendamento.</td><td><span class="tag soon">Fase 4</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ TECNOLOGIA ============ -->
+  <section id="tecnologia">
+    <div class="wrap">
+      <span class="kicker">Stack</span>
+      <h2>Tecnologia escolhida</h2>
+      <dl class="tech">
+        <div>
+          <dt>Frontend</dt>
+          <dd>Next.js · TypeScript · Tailwind</dd>
+          <p>PWA responsiva com SSR; um código para web e mobile.</p>
+        </div>
+        <div>
+          <dt>Visão computacional</dt>
+          <dd>MediaPipe Face Landmarker</dd>
+          <p>478 pontos 3D, WASM no navegador — grátis, rápido e privado.</p>
+        </div>
+        <div>
+          <dt>Motor de recomendação</dt>
+          <dd>Regras determinísticas + LLM só na prosa</dd>
+          <p>Regras auditáveis decidem; o modelo de linguagem apenas redige a explicação.</p>
+        </div>
+        <div>
+          <dt>Dados</dt>
+          <dd>Postgres (Supabase)</dd>
+          <p>Catálogo de estilos como vetores de atributos; auth e storage integrados.</p>
+        </div>
+        <div>
+          <dt>Try-on generativo (fase 3)</dt>
+          <dd>Gemini 2.5 Flash Image / FLUX Kontext</dd>
+          <p>~US$0,04 por imagem via fal.ai; evolução para Stable-Hair v2 self-hosted.</p>
+        </div>
+        <div>
+          <dt>Infra</dt>
+          <dd>Vercel + Supabase</dd>
+          <p>Zero-ops; fotos com URL assinada, criptografia e TTL ≤ 72h.</p>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ============ ROADMAP ============ -->
+  <section id="roadmap" class="alt">
+    <div class="wrap">
+      <span class="kicker">Roadmap</span>
+      <h2>Quatro fases, uma tese</h2>
+      <ol class="phases">
+        <li>
+          <span class="ph-label">Fase 1 · semanas 1–4</span>
+          <h3>Análise + recomendação explicável</h3>
+          <p>Foto → formato de rosto → recomendações com o porquê, sobre catálogo curado. Custo marginal ~zero; nenhum dado sensível sai do aparelho.</p>
+        </li>
+        <li>
+          <span class="ph-label">Fase 2 · semanas 5–6</span>
+          <h3>Camada de personalidade</h3>
+          <p>Quiz de projeção de imagem cruzado com a geometria — o diferencial que ninguém tem, pronto para o lançamento do beta.</p>
+        </li>
+        <li>
+          <span class="ph-label">Fase 3 · semanas 7–12</span>
+          <h3>Simulação na sua foto</h3>
+          <p>Try-on generativo com consentimento e apagamento automático; A/B de modelos com foco em fidelidade para cabelo cacheado e crespo.</p>
+        </li>
+        <li>
+          <span class="ph-label">Fase 4 · 3+ meses</span>
+          <h3>App móvel e salões</h3>
+          <p>Modo consultoria B2B por cadeira, guia técnico para o profissional e, depois, marketplace de agendamento — onde o modelo de receita recorrente mora.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ PRIVACIDADE ============ -->
+  <section class="privacy">
+    <div class="wrap">
+      <span class="kicker">Compromisso</span>
+      <blockquote>"Sua foto não sai do seu celular."</blockquote>
+      <p>
+        Toda a análise facial roda no seu navegador. Upload só acontece se você pedir uma simulação,
+        com consentimento específico (LGPD, art. 11), e o arquivo é apagado em até 72 horas.
+        Sem assinatura-armadilha, sem créditos que evaporam, sem treinar IA com o seu rosto.
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <p>Visagia — nome provisório · pré-MVP · 2026</p>
+    <p>Design: TypeUI "Refined" skill</p>
+  </div>
+</footer>
+
+</body>
+</html>
