@@ -5,16 +5,30 @@ import type { FaceShape, ScoredStyle, ShapeResult } from "@/lib/types";
 import { SHAPE_GOALS_PT, SHAPE_LABELS_PT } from "@/lib/faceShape";
 import TryOn from "./TryOn";
 
-function MeasurementPanel({ face }: { face: ShapeResult }) {
+const LEGEND = {
+  faceLength: "#3b82f6",
+  foreheadWidth: "#16a34a",
+  cheekWidth: "#8b5cf6",
+  jawWidth: "#d97706",
+} as const;
+
+function MeasurementPanel({
+  face,
+  annotatedDataUrl,
+}: {
+  face: ShapeResult;
+  annotatedDataUrl?: string;
+}) {
   const { ratios: r, membership } = face;
   const top3 = (Object.entries(membership) as [FaceShape, number][])
     .sort((a, b) => b[1] - a[1])
     .slice(0, 3);
 
-  const rows: { label: string; value: string; note: string }[] = [
+  const rows: { label: string; value: string; note: string; color?: string }[] = [
     {
       label: "Comprimento ÷ largura",
       value: r.r.toFixed(2),
+      color: LEGEND.faceLength,
       note:
         r.r < 1.15
           ? "rosto curto (família redondo/quadrado)"
@@ -25,6 +39,7 @@ function MeasurementPanel({ face }: { face: ShapeResult }) {
     {
       label: "Testa ÷ maçãs do rosto",
       value: r.f.toFixed(2),
+      color: LEGEND.foreheadWidth,
       note:
         r.f > 0.97
           ? "testa dominante"
@@ -35,12 +50,19 @@ function MeasurementPanel({ face }: { face: ShapeResult }) {
     {
       label: "Maxilar ÷ maçãs do rosto",
       value: r.j.toFixed(2),
+      color: LEGEND.jawWidth,
       note:
         r.j > 0.95
           ? "maxilar dominante"
           : r.j < 0.78
             ? "maxilar afilado"
             : "maxilar proporcional",
+    },
+    {
+      label: "Maçãs do rosto (referência)",
+      value: "1.00",
+      color: LEGEND.cheekWidth,
+      note: "todas as larguras são medidas em relação a ela",
     },
     {
       label: "Angularidade do maxilar",
@@ -58,11 +80,33 @@ function MeasurementPanel({ face }: { face: ShapeResult }) {
         Como chegamos nesse resultado
       </summary>
       <div className="px-4 pb-4">
+        {annotatedDataUrl && (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={annotatedDataUrl}
+              alt="Sua foto com as linhas de medição da análise"
+              className="w-full rounded-lg mb-2"
+            />
+            <p className="text-xs text-muted mb-4">
+              As linhas coloridas são exatamente o que o algoritmo mediu no seu
+              rosto — as cores casam com a tabela abaixo.
+            </p>
+          </>
+        )}
         <table className="w-full text-sm mb-4">
           <tbody>
             {rows.map((row) => (
               <tr key={row.label} className="border-t border-line">
-                <td className="py-2 pr-2">{row.label}</td>
+                <td className="py-2 pr-2">
+                  {row.color && (
+                    <span
+                      className="inline-block w-2.5 h-2.5 rounded-full mr-2 align-middle"
+                      style={{ backgroundColor: row.color }}
+                    />
+                  )}
+                  {row.label}
+                </td>
                 <td className="py-2 pr-2 font-mono text-xs">{row.value}</td>
                 <td className="py-2 text-muted text-xs">{row.note}</td>
               </tr>
@@ -101,9 +145,15 @@ interface Props {
   face: ShapeResult;
   results: ScoredStyle[];
   photoDataUrl: string;
+  annotatedDataUrl?: string;
 }
 
-export default function Results({ face, results, photoDataUrl }: Props) {
+export default function Results({
+  face,
+  results,
+  photoDataUrl,
+  annotatedDataUrl,
+}: Props) {
   const [tryOnStyle, setTryOnStyle] = useState<ScoredStyle | null>(null);
   const secondaryRelevant = face.membership[face.secondary] > 0.2;
 
@@ -129,7 +179,7 @@ export default function Results({ face, results, photoDataUrl }: Props) {
           confiança {(face.confidence * 100).toFixed(0)}% · proporção
           comprimento/largura {face.ratios.r.toFixed(2)}
         </p>
-        <MeasurementPanel face={face} />
+        <MeasurementPanel face={face} annotatedDataUrl={annotatedDataUrl} />
       </div>
 
       <ol className="space-y-6">

@@ -6,12 +6,68 @@
 
 import { useCallback, useRef, useState } from "react";
 import type { ShapeResult } from "@/lib/types";
-import { classify, measure, MAX_POSE_DEVIATION_DEG } from "@/lib/faceShape";
+import {
+  classify,
+  measure,
+  MEASUREMENT_LANDMARKS,
+  MAX_POSE_DEVIATION_DEG,
+  type Landmark,
+} from "@/lib/faceShape";
 
 interface Props {
-  onAnalyzed: (result: ShapeResult, photoDataUrl: string) => void;
+  onAnalyzed: (
+    result: ShapeResult,
+    photoDataUrl: string,
+    annotatedDataUrl: string
+  ) => void;
   /** demo mode: skip the photo and continue with a sample analysis */
   onDemo?: () => void;
+}
+
+// Colors match the MeasurementPanel legend (Refined tokens).
+export const MEASUREMENT_COLORS = {
+  faceLength: "#3b82f6", // primary
+  foreheadWidth: "#16a34a", // success
+  cheekWidth: "#8b5cf6", // secondary
+  jawWidth: "#d97706", // warning
+} as const;
+
+/** Draw the measurement lines used by the classifier over the photo. */
+function annotate(img: HTMLImageElement, lm: Landmark[]): string {
+  const maxW = 900;
+  const scale = Math.min(1, maxW / img.naturalWidth);
+  const canvas = document.createElement("canvas");
+  canvas.width = img.naturalWidth * scale;
+  canvas.height = img.naturalHeight * scale;
+  const ctx = canvas.getContext("2d")!;
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+  const line = (a: number, b: number, color: string) => {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = Math.max(2, canvas.width / 300);
+    ctx.beginPath();
+    ctx.moveTo(lm[a].x * scale, lm[a].y * scale);
+    ctx.lineTo(lm[b].x * scale, lm[b].y * scale);
+    ctx.stroke();
+    for (const i of [a, b]) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(lm[i].x * scale, lm[i].y * scale, ctx.lineWidth * 1.4, 0, 7);
+      ctx.fill();
+    }
+  };
+
+  for (const key of [
+    "faceLength",
+    "foreheadWidth",
+    "cheekWidth",
+    "jawWidth",
+  ] as const) {
+    for (const [a, b] of MEASUREMENT_LANDMARKS[key]) {
+      line(a, b, MEASUREMENT_COLORS[key]);
+    }
+  }
+  return canvas.toDataURL("image/jpeg", 0.85);
 }
 
 type Status =
@@ -85,7 +141,7 @@ export default function PhotoStep({ onAnalyzed, onDemo }: Props) {
         }
 
         const result = classify(measure(lm, poseDeg));
-        onAnalyzed(result, dataUrl);
+        onAnalyzed(result, dataUrl, annotate(img, lm));
       } catch (err) {
         console.error(err);
         const detail = err instanceof Error ? err.message : String(err);

@@ -27,6 +27,7 @@ export default function AnalisePage() {
   const [step, setStep] = useState<Step>("foto");
   const [face, setFace] = useState<ShapeResult | null>(null);
   const [photo, setPhoto] = useState<string>("");
+  const [annotated, setAnnotated] = useState<string>("");
   const [profile, setProfile] = useState<HairProfile | null>(null);
   const [desired, setDesired] = useState<ArchetypeVector | null>(null);
 
@@ -70,9 +71,10 @@ export default function AnalisePage() {
       <div className="max-w-3xl mx-auto px-6 py-16">
         {step === "foto" && (
           <PhotoStep
-            onAnalyzed={(result, dataUrl) => {
+            onAnalyzed={(result, dataUrl, annotatedUrl) => {
               setFace(result);
               setPhoto(dataUrl);
+              setAnnotated(annotatedUrl);
               setStep("cabelo");
             }}
             onDemo={() => {
@@ -90,6 +92,7 @@ export default function AnalisePage() {
                 })
               );
               setPhoto("");
+              setAnnotated("");
               setStep("cabelo");
             }}
           />
@@ -114,7 +117,12 @@ export default function AnalisePage() {
         )}
 
         {step === "resultado" && face && (
-          <Results face={face} results={results} photoDataUrl={photo} />
+          <Results
+            face={face}
+            results={results}
+            photoDataUrl={photo}
+            annotatedDataUrl={annotated}
+          />
         )}
       </div>
     </main>
