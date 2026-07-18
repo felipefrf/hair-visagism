@@ -38,7 +38,7 @@ personality you want — with realistic previews on your own photo.**
 (critical in Brazil), the entire CV stack is web-native, one codebase. Mobile app only in Phase 4
 (Capacitor wrap or React Native) once retention justifies store presence.
 
-### In scope — MVP (Phases 1–2, target ~4–6 weeks)
+### In scope — MVP (target ~6–10 weeks)
 
 | # | Feature | Detail |
 |---|---------|--------|
@@ -51,13 +51,12 @@ personality you want — with realistic previews on your own photo.**
 | 7 | Explainable results page | Ranked styles with example images + generated "why it works" text + maintenance scorecard + chemical-treatment path when applicable |
 | 8 | Hairstyle catalog | 60–100 styles as feature vectors (silhouette, line language, fringe, texture compatibility, archetype scores), curated across liso/ondulado/cacheado/crespo, masculine + feminine conventions |
 | 9 | Shareable result + stylist handoff | Export/share card with the analysis and chosen styles ("mostre ao seu cabeleireiro") |
+| 10 | **Generative try-on** | Render the top recommended styles on the user's own photo via a hosted instruction-editing model (Gemini 2.5 Flash Image or FLUX Kontext via fal.ai, ~$0.04/image); consent-gated upload, async render flow, auto-delete ≤72h |
 
-### Fast follow — Phase 3 (weeks ~6–12)
-- **Generative try-on** on the user's own photo: hosted instruction-editing model (Gemini 2.5 Flash
-  Image or FLUX Kontext via fal.ai, ~$0.04/image), consent-gated upload, async render queue,
-  auto-delete ≤72h. Render the top 3–5 recommended styles (~R$1/sessão de custo).
+### Fast follow (post-MVP)
 - Evaluate self-hosted **Stable-Hair v2** for reference-exact transfer, multi-view (back of the
   cut), and better curly/coily fidelity — our texture moat.
+- Render-quality A/B across providers with a texture-diverse test set (cacheado/crespo focus).
 
 ### Explicitly OUT of MVP scope
 - Native mobile apps (Phase 4)

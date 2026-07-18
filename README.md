@@ -23,11 +23,25 @@ professional, elegant, and more.
 
 ## Repository layout
 
+- `web/` — the product: Next.js PWA (MediaPipe on-device face analysis,
+  visagism recommendation engine, generative try-on via FLUX Kontext).
 - `docs/research/` — domain, market, user, and technical research that grounds
   the product decisions.
 - `docs/plan/` — product plan and technical architecture.
+- `marketing/index.html` — static marketing page (TypeUI "Refined" skill).
+- `.claude/skills/refined/` — the design system skill guiding all UI.
+
+## Running the app
+
+```bash
+cd web
+npm install
+npm run dev
+```
+
+Set `FAL_KEY` (see `web/.env.example`) to enable the generative try-on;
+analysis and recommendations work without it.
 
 ## Status
 
-Pre-MVP: research and planning phase. See `docs/plan/product-plan.md` for the
-roadmap.
+MVP in development. See `docs/plan/product-plan.md` for scope and roadmap.
