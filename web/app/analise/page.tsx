@@ -39,17 +39,20 @@ export default function AnalisePage() {
 
   return (
     <main className="flex-1">
-      <header className="border-b border-line">
-        <nav className="max-w-3xl mx-auto flex items-center justify-between px-6 py-4">
-          <Link href="/" className="text-xl font-bold italic">
+      <header className="sticky top-0 z-40 border-b border-line bg-white">
+        <nav className="max-w-3xl mx-auto flex flex-wrap items-center justify-between gap-x-6 gap-y-1 px-4 py-3 sm:px-6">
+          <Link href="/" className="text-lg sm:text-xl font-bold italic shrink-0">
             Visagia
           </Link>
-          <ol className="flex gap-4" aria-label="Progresso">
+          <ol
+            className="flex gap-3 sm:gap-4 overflow-x-auto whitespace-nowrap"
+            aria-label="Progresso"
+          >
             {STEPS.map((s, i) => (
               <li
                 key={s.id}
                 aria-current={s.id === step ? "step" : undefined}
-                className={`font-mono text-xs uppercase tracking-widest ${
+                className={`font-mono text-[11px] sm:text-xs uppercase tracking-widest ${
                   i < stepIndex
                     ? "text-success"
                     : i === stepIndex
