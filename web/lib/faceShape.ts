@@ -23,22 +23,88 @@ export interface Landmark {
 const dist = (a: Landmark, b: Landmark) =>
   Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
 
+const mid = (a: Landmark, b: Landmark): Landmark => ({
+  x: (a.x + b.x) / 2,
+  y: (a.y + b.y) / 2,
+  z: (a.z + b.z) / 2,
+});
+
+// Landmark pairs used per measurement. Averaging several parallel pairs makes
+// each width robust to single-point jitter and mild occlusion (hair over one
+// temple, earring shadows, etc.) — the single biggest F1 lever short of
+// training on labeled data.
+export const MEASUREMENT_LANDMARKS = {
+  faceLength: [[10, 152]],
+  cheekWidth: [
+    [234, 454], // face oval extremes at cheek level
+    [116, 345], // zygomatic arch
+    [93, 323], // just below the arch
+  ],
+  foreheadWidth: [
+    [103, 332], // temporal crest
+    [67, 297], // upper forehead
+    [54, 284], // hairline corners
+  ],
+  jawWidth: [
+    [172, 397], // gonion
+    [136, 365], // slightly above gonion
+  ],
+  midJaw: [
+    [58, 288],
+    [214, 434],
+  ],
+  chinBase: [
+    [148, 377],
+    [176, 400],
+  ],
+} as const;
+
+const avgDist = (lm: Landmark[], pairs: readonly (readonly number[])[]) =>
+  pairs.reduce((sum, [a, b]) => sum + dist(lm[a], lm[b]), 0) / pairs.length;
+
+/**
+ * Estimate yaw from depth asymmetry of the cheek extremes: when the head
+ * turns, the far cheek's z grows relative to the near one. Widths measured
+ * on a turned face shrink by ~cos(yaw); we correct them back.
+ */
+function estimateYawRad(lm: Landmark[]): number {
+  const dz = Math.abs(lm[234].z - lm[454].z);
+  const w = dist(lm[234], lm[454]);
+  return Math.atan2(dz, w);
+}
+
 export function measure(
   lm: Landmark[],
   poseDeviation = 0
 ): FaceMeasurements {
-  const faceLength = dist(lm[10], lm[152]);
-  const cheekWidth = dist(lm[234], lm[454]);
-  const foreheadWidth = dist(lm[103], lm[332]);
-  const jawWidth = dist(lm[172], lm[397]);
+  const L = MEASUREMENT_LANDMARKS;
+  const yaw = estimateYawRad(lm);
+  const widthCorrection = 1 / Math.max(Math.cos(yaw), 0.85);
 
-  // Jaw angularity: how far the mid-jaw points (58/288) sit outside the
-  // straight chin→gonion line. Wider mid-jaw relative to the taper → squarer.
-  const lowerJaw = dist(lm[58], lm[288]);
-  const jawAngularity = clamp01((lowerJaw / jawWidth - 0.72) / 0.25);
+  const faceLength = avgDist(lm, L.faceLength);
+  const cheekWidth = avgDist(lm, L.cheekWidth) * widthCorrection;
+  const foreheadWidth = avgDist(lm, L.foreheadWidth) * widthCorrection;
+  const jawWidth = avgDist(lm, L.jawWidth) * widthCorrection;
+
+  // Jaw angularity via the gonial bend: angle at the jaw corner between the
+  // chin direction and the ear direction, averaged over both sides. A square
+  // jaw approaches 90° (sharp bend); a round jaw flattens toward 180°.
+  const angleAt = (corner: Landmark, up: Landmark, chin: Landmark) => {
+    const v1 = { x: up.x - corner.x, y: up.y - corner.y };
+    const v2 = { x: chin.x - corner.x, y: chin.y - corner.y };
+    const cos =
+      (v1.x * v2.x + v1.y * v2.y) /
+      (Math.hypot(v1.x, v1.y) * Math.hypot(v2.x, v2.y) || 1);
+    return Math.acos(Math.max(-1, Math.min(1, cos)));
+  };
+  const gonialL = angleAt(lm[172], lm[234], lm[152]);
+  const gonialR = angleAt(lm[397], lm[454], lm[152]);
+  const gonialDeg = ((gonialL + gonialR) / 2) * (180 / Math.PI);
+  // ~170° (flat/round) → 0 ; ~125° (sharp/square) → 1
+  const jawAngularity = clamp01((170 - gonialDeg) / 45);
 
   // Chin pointedness: narrow chin base relative to jaw width → pointed.
-  const chinBase = dist(lm[148], lm[377]);
+  const chinBase = avgDist(lm, L.chinBase) * widthCorrection;
   const chinPointedness = clamp01(1 - (chinBase / jawWidth - 0.18) / 0.3);
 
   return {

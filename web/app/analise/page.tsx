@@ -8,6 +8,7 @@ import type {
   ShapeResult,
 } from "@/lib/types";
 import { recommend } from "@/lib/engine";
+import { classify } from "@/lib/faceShape";
 import PhotoStep from "@/components/PhotoStep";
 import HairQuiz from "@/components/HairQuiz";
 import PersonalityQuiz from "@/components/PersonalityQuiz";
@@ -69,6 +70,23 @@ export default function AnalisePage() {
             onAnalyzed={(result, dataUrl) => {
               setFace(result);
               setPhoto(dataUrl);
+              setStep("cabelo");
+            }}
+            onDemo={() => {
+              // Sample analysis: an oval face leaning square, so the demo
+              // shows blended membership and the full results experience.
+              setFace(
+                classify({
+                  faceLength: 1.38,
+                  cheekWidth: 1,
+                  foreheadWidth: 0.92,
+                  jawWidth: 0.93,
+                  jawAngularity: 0.65,
+                  chinPointedness: 0.3,
+                  poseDeviation: 0,
+                })
+              );
+              setPhoto("");
               setStep("cabelo");
             }}
           />

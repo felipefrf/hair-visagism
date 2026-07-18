@@ -79,12 +79,18 @@ export default function Results({ face, results, photoDataUrl }: Props) {
               </p>
             )}
 
-            <button
-              onClick={() => setTryOnStyle(r)}
-              className="font-mono text-xs uppercase tracking-widest text-primary hover:text-ink"
-            >
-              Ver no meu rosto →
-            </button>
+            {photoDataUrl ? (
+              <button
+                onClick={() => setTryOnStyle(r)}
+                className="font-mono text-xs uppercase tracking-widest text-primary hover:text-ink"
+              >
+                Ver no meu rosto →
+              </button>
+            ) : (
+              <p className="font-mono text-xs text-muted">
+                simulação disponível ao analisar com a sua foto
+              </p>
+            )}
           </li>
         ))}
       </ol>

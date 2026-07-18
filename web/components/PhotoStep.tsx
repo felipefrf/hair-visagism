@@ -10,6 +10,8 @@ import { classify, measure, MAX_POSE_DEVIATION_DEG } from "@/lib/faceShape";
 
 interface Props {
   onAnalyzed: (result: ShapeResult, photoDataUrl: string) => void;
+  /** demo mode: skip the photo and continue with a sample analysis */
+  onDemo?: () => void;
 }
 
 type Status =
@@ -17,7 +19,7 @@ type Status =
   | { kind: "loading"; message: string }
   | { kind: "error"; message: string };
 
-export default function PhotoStep({ onAnalyzed }: Props) {
+export default function PhotoStep({ onAnalyzed, onDemo }: Props) {
   const [status, setStatus] = useState<Status>({ kind: "idle" });
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -127,6 +129,17 @@ export default function PhotoStep({ onAnalyzed }: Props) {
       {status.kind === "error" && (
         <p className="mt-6 text-sm text-danger max-w-md mx-auto">
           {status.message}
+        </p>
+      )}
+
+      {onDemo && status.kind !== "loading" && (
+        <p className="mt-8">
+          <button
+            onClick={onDemo}
+            className="font-mono text-xs uppercase tracking-widest text-muted underline underline-offset-4 hover:text-ink"
+          >
+            ou explore uma demo sem foto →
+          </button>
         </p>
       )}
     </div>
