@@ -31,13 +31,12 @@ export default function PhotoStep({ onAnalyzed, onDemo }: Props) {
         const { FaceLandmarker, FilesetResolver } = await import(
           "@mediapipe/tasks-vision"
         );
-        const vision = await FilesetResolver.forVisionTasks(
-          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm"
-        );
+        // Self-hosted runtime (see scripts/prepare-assets.mjs): guarantees the
+        // WASM matches the npm JS version and keeps analysis fully first-party.
+        const vision = await FilesetResolver.forVisionTasks("/mediapipe/wasm");
         const landmarker = await FaceLandmarker.createFromOptions(vision, {
           baseOptions: {
-            modelAssetPath:
-              "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
+            modelAssetPath: "/models/face_landmarker.task",
           },
           runningMode: "IMAGE",
           numFaces: 1,
@@ -82,10 +81,10 @@ export default function PhotoStep({ onAnalyzed, onDemo }: Props) {
         onAnalyzed(result, dataUrl);
       } catch (err) {
         console.error(err);
+        const detail = err instanceof Error ? err.message : String(err);
         setStatus({
           kind: "error",
-          message:
-            "Algo deu errado ao analisar a foto. Verifique sua conexão (o modelo é baixado na primeira vez) e tente novamente.",
+          message: `Algo deu errado ao analisar a foto — tente novamente. (detalhe técnico: ${detail.slice(0, 160)})`,
         });
       }
     },
