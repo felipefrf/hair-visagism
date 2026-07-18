@@ -34,18 +34,14 @@ export const MEASUREMENT_LANDMARKS = {
     [116, 345], // zygomatic arch
     [93, 323], // just below the arch
   ],
+  // NOTE: pairs high on the forehead (e.g. 67/297) measure where the mesh
+  // narrows and systematically underestimate F — use temple-level pairs only.
   foreheadWidth: [
     [103, 332], // temporal crest
-    [67, 297], // upper forehead
     [54, 284], // hairline corners
   ],
   jawWidth: [
-    [172, 397], // gonion
-    [136, 365], // slightly above gonion
-  ],
-  midJaw: [
-    [58, 288],
-    [214, 434],
+    [172, 397], // gonion — the defining jaw width
   ],
   chinBase: [
     [148, 377],
@@ -122,27 +118,41 @@ export function ratios(m: FaceMeasurements): FaceRatios {
   };
 }
 
-// Shape prototypes in (r, f, j, angularity, chinPointedness) space.
+// Shape prototypes in (r, f, j, j−f, angularity, chinPointedness) space.
 // Calibrated to the trade conventions (visagism-domain.md §2.2):
 // oval r≈1.45; round/square r≈1.05; oblong r≥1.65; heart wide forehead +
 // pointed chin; diamond narrow forehead and jaw; triangle jaw-dominant.
-const PROTOTYPES: Record<FaceShape, [number, number, number, number, number]> = {
-  oval:     [1.45, 0.90, 0.82, 0.35, 0.45],
-  round:    [1.05, 0.88, 0.85, 0.15, 0.20],
-  square:   [1.05, 0.92, 0.98, 0.85, 0.15],
-  heart:    [1.40, 1.02, 0.72, 0.35, 0.85],
-  diamond:  [1.45, 0.78, 0.74, 0.45, 0.80],
-  oblong:   [1.70, 0.90, 0.88, 0.45, 0.35],
-  triangle: [1.30, 0.78, 1.02, 0.55, 0.25],
+// j−f (jaw dominance) is what actually separates triangle from everything
+// else — without it, triangle's mid-range length ratio soaks up every
+// medium-length face regardless of jaw.
+const PROTOTYPES: Record<
+  FaceShape,
+  [number, number, number, number, number, number]
+> = {
+  oval:     [1.45, 0.90, 0.82, -0.08, 0.35, 0.45],
+  round:    [1.05, 0.88, 0.85, -0.03, 0.15, 0.20],
+  square:   [1.05, 0.92, 0.98, 0.06, 0.85, 0.15],
+  heart:    [1.40, 1.02, 0.72, -0.30, 0.35, 0.85],
+  diamond:  [1.45, 0.78, 0.74, -0.04, 0.45, 0.80],
+  oblong:   [1.70, 0.90, 0.88, -0.02, 0.45, 0.35],
+  triangle: [1.20, 0.80, 1.02, 0.22, 0.55, 0.25],
 };
 
-// Feature weights: length ratio dominates, then width distribution.
-const WEIGHTS = [2.2, 1.6, 1.6, 0.9, 0.8];
+// Feature weights: length ratio dominates, then width distribution and
+// jaw dominance.
+const WEIGHTS = [2.2, 1.6, 1.6, 2.0, 0.9, 0.8];
 const SOFTMAX_TEMP = 9;
 
 export function classify(m: FaceMeasurements): ShapeResult {
   const rr = ratios(m);
-  const feat = [rr.r, rr.f, rr.j, m.jawAngularity, m.chinPointedness];
+  const feat = [
+    rr.r,
+    rr.f,
+    rr.j,
+    rr.j - rr.f,
+    m.jawAngularity,
+    m.chinPointedness,
+  ];
 
   const scores = FACE_SHAPES.map((shape) => {
     const p = PROTOTYPES[shape];

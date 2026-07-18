@@ -1,9 +1,101 @@
 "use client";
 
 import { useState } from "react";
-import type { ScoredStyle, ShapeResult } from "@/lib/types";
+import type { FaceShape, ScoredStyle, ShapeResult } from "@/lib/types";
 import { SHAPE_GOALS_PT, SHAPE_LABELS_PT } from "@/lib/faceShape";
 import TryOn from "./TryOn";
+
+function MeasurementPanel({ face }: { face: ShapeResult }) {
+  const { ratios: r, membership } = face;
+  const top3 = (Object.entries(membership) as [FaceShape, number][])
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+
+  const rows: { label: string; value: string; note: string }[] = [
+    {
+      label: "Comprimento ÷ largura",
+      value: r.r.toFixed(2),
+      note:
+        r.r < 1.15
+          ? "rosto curto (família redondo/quadrado)"
+          : r.r > 1.6
+            ? "rosto longo (alongado)"
+            : "comprimento equilibrado",
+    },
+    {
+      label: "Testa ÷ maçãs do rosto",
+      value: r.f.toFixed(2),
+      note:
+        r.f > 0.97
+          ? "testa dominante"
+          : r.f < 0.82
+            ? "testa mais estreita"
+            : "testa proporcional",
+    },
+    {
+      label: "Maxilar ÷ maçãs do rosto",
+      value: r.j.toFixed(2),
+      note:
+        r.j > 0.95
+          ? "maxilar dominante"
+          : r.j < 0.78
+            ? "maxilar afilado"
+            : "maxilar proporcional",
+    },
+    {
+      label: "Angularidade do maxilar",
+      value: `${(face.measurements.jawAngularity * 100).toFixed(0)}%`,
+      note:
+        face.measurements.jawAngularity > 0.6
+          ? "ângulos marcados"
+          : "contorno suave",
+    },
+  ];
+
+  return (
+    <details className="max-w-lg mx-auto mt-6 text-left border border-line rounded-lg">
+      <summary className="cursor-pointer px-4 py-3 font-mono text-xs uppercase tracking-widest text-primary">
+        Como chegamos nesse resultado
+      </summary>
+      <div className="px-4 pb-4">
+        <table className="w-full text-sm mb-4">
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.label} className="border-t border-line">
+                <td className="py-2 pr-2">{row.label}</td>
+                <td className="py-2 pr-2 font-mono text-xs">{row.value}</td>
+                <td className="py-2 text-muted text-xs">{row.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p className="font-mono text-xs uppercase tracking-widest text-muted mb-2">
+          Proximidade por formato
+        </p>
+        {top3.map(([shape, m]) => (
+          <div key={shape} className="flex items-center gap-2 mb-1">
+            <span className="text-sm w-24 shrink-0">
+              {SHAPE_LABELS_PT[shape]}
+            </span>
+            <span
+              className="h-2 rounded bg-primary/70"
+              style={{ width: `${Math.round(m * 100)}%`, maxWidth: "70%" }}
+            />
+            <span className="font-mono text-xs text-muted">
+              {(m * 100).toFixed(0)}%
+            </span>
+          </div>
+        ))}
+        <p className="text-xs text-muted mt-3">
+          Medidas tiradas de 478 pontos faciais, corrigidas pela rotação da
+          cabeça. Barba volumosa, sorriso largo ou cabelo sobre a testa podem
+          alterar a leitura — na dúvida, refaça com o rosto neutro e cabelo
+          afastado.
+        </p>
+      </div>
+    </details>
+  );
+}
 
 interface Props {
   face: ShapeResult;
@@ -37,6 +129,7 @@ export default function Results({ face, results, photoDataUrl }: Props) {
           confiança {(face.confidence * 100).toFixed(0)}% · proporção
           comprimento/largura {face.ratios.r.toFixed(2)}
         </p>
+        <MeasurementPanel face={face} />
       </div>
 
       <ol className="space-y-6">
