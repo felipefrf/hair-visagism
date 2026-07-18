@@ -23,12 +23,6 @@ export interface Landmark {
 const dist = (a: Landmark, b: Landmark) =>
   Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
 
-const mid = (a: Landmark, b: Landmark): Landmark => ({
-  x: (a.x + b.x) / 2,
-  y: (a.y + b.y) / 2,
-  z: (a.z + b.z) / 2,
-});
-
 // Landmark pairs used per measurement. Averaging several parallel pairs makes
 // each width robust to single-point jitter and mild occlusion (hair over one
 // temple, earring shadows, etc.) — the single biggest F1 lever short of
