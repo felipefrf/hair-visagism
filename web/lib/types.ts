@@ -60,6 +60,8 @@ export type CurlPattern =
 export type Density = "baixa" | "media" | "alta";
 export type Length = "raspado" | "curto" | "orelha" | "queixo" | "ombro" | "longo";
 export type ChemicalOpenness = "nenhuma" | "leve" | "aberta";
+export type Hairline = "cheia" | "entradas" | "rarefeita";
+export type HairlinePref = "disfarcar" | "assumir";
 
 export interface HairProfile {
   pattern: CurlPattern;
@@ -70,6 +72,9 @@ export interface HairProfile {
   /** minutes per day the user accepts styling */
   maintenanceMinutes: 5 | 15 | 30;
   convention: "masculina" | "feminina";
+  hairline: Hairline;
+  /** only relevant when hairline !== "cheia" */
+  hairlinePref?: HairlinePref;
 }
 
 // --- Personality projection --------------------------------------------------

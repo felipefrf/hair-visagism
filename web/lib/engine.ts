@@ -195,6 +195,24 @@ function hardRules(
       reason: `pede ~${style.maintenanceMinutes} min/dia de styling — acima da sua rotina`,
     });
   }
+
+  // Hairline: someone hiding entradas/rarefação should not get styles that
+  // expose the hairline — a buzz cut or slicked-back puts it in evidence.
+  if (profile.hairline !== "cheia" && profile.hairlinePref === "disfarcar") {
+    if (style.lengthBand === "raspado") {
+      p.push({
+        amount: 0.5,
+        reason:
+          "corte raspado deixa as entradas totalmente em evidência — você prefere disfarçá-las",
+      });
+    } else if (style.foreheadCoverage === "nenhuma") {
+      p.push({
+        amount: 0.3,
+        reason:
+          "estilo com a testa exposta evidencia a linha do cabelo — franjas e texturas para a frente disfarçam melhor",
+      });
+    }
+  }
   return p;
 }
 
@@ -263,6 +281,18 @@ function explain(
     );
   } else if (style.textureNative.includes(profile.pattern)) {
     out.push(`funciona com o seu padrão ${profile.pattern} sem química`);
+  }
+
+  // Hairline camouflage bonus is worth naming — it's a decision driver.
+  if (
+    profile.hairline !== "cheia" &&
+    profile.hairlinePref === "disfarcar" &&
+    style.foreheadCoverage !== "nenhuma" &&
+    style.fringe !== "nenhuma"
+  ) {
+    out.push(
+      "a franja/cobertura na testa disfarça as entradas de forma natural"
+    );
   }
 
   // Maintenance.

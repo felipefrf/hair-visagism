@@ -5,9 +5,12 @@ import type {
   ChemicalOpenness,
   CurlPattern,
   Density,
+  Hairline,
+  HairlinePref,
   HairProfile,
   Length,
 } from "@/lib/types";
+import CurlIcon from "./CurlIcon";
 
 interface Props {
   onDone: (profile: HairProfile) => void;
@@ -26,6 +29,17 @@ const PATTERNS: { value: CurlPattern; label: string }[] = [
   { value: "4A", label: "4A · crespo definido" },
   { value: "4B", label: "4B · crespo em Z" },
   { value: "4C", label: "4C · crespo fechado" },
+];
+
+const HAIRLINES: { value: Hairline; label: string }[] = [
+  { value: "cheia", label: "Cheia / sem entradas" },
+  { value: "entradas", label: "Com entradas" },
+  { value: "rarefeita", label: "Rareando no topo" },
+];
+
+const HAIRLINE_PREFS: { value: HairlinePref; label: string }[] = [
+  { value: "disfarcar", label: "Prefiro disfarçar" },
+  { value: "assumir", label: "Prefiro assumir" },
 ];
 
 const DENSITIES: { value: Density; label: string }[] = [
@@ -65,10 +79,13 @@ export default function HairQuiz({ onDone }: Props) {
   const [convention, setConvention] = useState<
     "masculina" | "feminina" | null
   >(null);
+  const [hairline, setHairline] = useState<Hairline | null>(null);
+  const [hairlinePref, setHairlinePref] = useState<HairlinePref | null>(null);
 
   const ready =
     pattern && density && length && chemHistory !== null && openness &&
-    maintenance && convention;
+    maintenance && convention && hairline &&
+    (hairline === "cheia" || hairlinePref);
 
   return (
     <div>
@@ -79,7 +96,34 @@ export default function HairQuiz({ onDone }: Props) {
       </p>
 
       <Field label="Padrão de curvatura">
-        <ChipGroup options={PATTERNS} value={pattern} onChange={setPattern} />
+        <div
+          role="group"
+          className="grid grid-cols-3 sm:grid-cols-4 gap-2"
+        >
+          {PATTERNS.map((opt) => {
+            const selected = pattern === opt.value;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                aria-pressed={selected}
+                onClick={() => setPattern(opt.value)}
+                className={`p-3 rounded-lg border text-center transition-colors ${
+                  selected
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-line text-muted hover:border-muted hover:text-ink"
+                }`}
+              >
+                <CurlIcon pattern={opt.value} />
+                <span
+                  className={`block text-xs mt-1 ${selected ? "font-medium" : ""}`}
+                >
+                  {opt.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </Field>
 
       <Field label="Densidade">
@@ -99,6 +143,19 @@ export default function HairQuiz({ onDone }: Props) {
           value={chemHistory}
           onChange={setChemHistory}
         />
+      </Field>
+
+      <Field label="Como está sua linha do cabelo?">
+        <ChipGroup options={HAIRLINES} value={hairline} onChange={setHairline} />
+        {hairline && hairline !== "cheia" && (
+          <div className="mt-3">
+            <ChipGroup
+              options={HAIRLINE_PREFS}
+              value={hairlinePref}
+              onChange={setHairlinePref}
+            />
+          </div>
+        )}
       </Field>
 
       <Field label="Abertura a procedimentos químicos">
@@ -137,6 +194,9 @@ export default function HairQuiz({ onDone }: Props) {
               chemicalOpenness: openness!,
               maintenanceMinutes: maintenance!,
               convention: convention!,
+              hairline: hairline!,
+              hairlinePref:
+                hairline === "cheia" ? undefined : hairlinePref!,
             })
           }
           className="bg-ink text-white font-mono text-sm px-8 py-3 rounded-lg hover:bg-primary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"

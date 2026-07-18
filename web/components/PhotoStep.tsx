@@ -58,7 +58,14 @@ export default function PhotoStep({ onAnalyzed, onDemo }: Props) {
           return;
         }
 
-        const lm = detection.faceLandmarks[0];
+        // MediaPipe returns coordinates normalized by image width/height —
+        // de-normalize into a common pixel space or portrait photos squash
+        // the face length and break every ratio.
+        const lm = detection.faceLandmarks[0].map((p) => ({
+          x: p.x * img.naturalWidth,
+          y: p.y * img.naturalHeight,
+          z: p.z * img.naturalWidth,
+        }));
 
         // Pose gating: compare nose-to-cheek distances left vs right — a
         // turned head breaks the width ratios.

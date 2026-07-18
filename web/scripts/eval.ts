@@ -126,10 +126,11 @@ async function main() {
         // @ts-expect-error set in the init evaluate
         const det = window.__landmarker.detect(img);
         if (!det.faceLandmarks.length) return null;
+        // De-normalize into pixel space (same as the production PhotoStep).
         return det.faceLandmarks[0].map((p: { x: number; y: number; z: number }) => ({
-          x: p.x,
-          y: p.y,
-          z: p.z,
+          x: p.x * img.naturalWidth,
+          y: p.y * img.naturalHeight,
+          z: p.z * img.naturalWidth,
         }));
       },
       { b64, mime }
