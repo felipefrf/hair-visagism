@@ -76,6 +76,17 @@ export async function POST(request: Request) {
     return Response.json({ imageUrl });
   } catch (err) {
     console.error("tryon render failed", err);
+    const status = (err as { status?: number })?.status;
+    const detail = err instanceof Error ? err.message : String(err);
+    if (status === 401 || status === 403 || /balance|credit|unauthorized|forbidden/i.test(detail)) {
+      return Response.json(
+        {
+          error:
+            "O provedor de renderização recusou a chamada — verifique se a FAL_KEY é válida e se há créditos na conta fal.ai (Billing → Add funds).",
+        },
+        { status: 502 }
+      );
+    }
     return Response.json(
       { error: "Falha na renderização — tente novamente em instantes." },
       { status: 502 }
